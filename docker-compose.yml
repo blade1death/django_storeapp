@@ -1,0 +1,32 @@
+
+version: '1'
+
+services:
+  django:
+    build: .
+    container_name: django
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - pgdb
+    environment: 
+      - DJANGO_SUPERUSER_USERNAME=turboadmin
+      - DJANGO_SUPERUSER_PASSWORD=megapassword
+      - DJANGO_SUPERUSER_EMAIL=dragongking@mail.ru
+    entrypoint: /bin/bash
+    command: -c "python manage.py migrate && python manage.py createsuperuser --noinput && exec python manage.py runserver 0.0.0.0:8000"
+
+  pgdb:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    container_name: pgdb
+    volumes:
+      - pgdbdata:/var/lib/postgresql/data/
+
+volumes:
+  pgdbdata: null
